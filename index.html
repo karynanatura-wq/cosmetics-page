@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Consumer Insight</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: #ff4db8;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.header {
+  background: #ff4db8;
+  border-bottom: 3px solid #fff;
+  padding: 52px 16px 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.header h1 {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  -webkit-text-stroke: 1px #d0006a;
+  text-shadow: 2px 2px 0 #d0006a;
+}
+
+/* SCREENS */
+.screen {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+.screen.active {
+  display: flex;
+}
+
+/* BRAND LIST */
+.brand-list {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-bottom: 90px;
+}
+
+.brand-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 22px 20px;
+  cursor: pointer;
+  transition: transform 0.12s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-card:active { transform: scale(0.97); }
+
+.brand-name {
+  font-size: 26px;
+  font-weight: 900;
+  font-style: italic;
+  text-align: center;
+}
+.brand-name.fenty  { color: #9b59b6; -webkit-text-stroke: 1px #f39c12; text-shadow: 2px 2px 0 #f39c12; }
+.brand-name.chanel { color: #3498db; -webkit-text-stroke: 1px #2980b9; text-shadow: 1px 1px 0 #1a5276; }
+.brand-name.sol    { color: #f39c12; -webkit-text-stroke: 1px #d35400; text-shadow: 2px 2px 0 #d35400; }
+.brand-name.kiko   { color: #f39c12; -webkit-text-stroke: 1px #d35400; text-shadow: 2px 2px 0 #d35400; }
+
+/* PRODUCTS SCREEN */
+.products-header {
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+.selected-brand {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 20px;
+  text-align: center;
+}
+.selected-brand span {
+  font-size: 24px;
+  font-weight: 900;
+  font-style: italic;
+  color: #f39c12;
+  -webkit-text-stroke: 1px #d35400;
+  text-shadow: 2px 2px 0 #d35400;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.back-btn svg {
+  width: 18px; height: 18px;
+  stroke: #fff; fill: none;
+  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.product-grid {
+  flex: 1;
+  padding: 8px 12px 90px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 18px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  overflow: hidden;
+  position: relative;
+}
+.product-card.selected {
+  background: #d0d8e8;
+  box-shadow: 0 0 0 3px #fff inset;
+}
+.product-card img {
+  width: 85%; height: 85%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.product-card .check-mark {
+  display: none;
+  position: absolute;
+  top: 8px; right: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  align-items: center; justify-content: center;
+}
+.product-card.selected .check-mark { display: flex; }
+.check-mark svg {
+  width: 14px; height: 14px;
+  stroke: #fff; fill: none;
+  stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* BOTTOM NAV */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-top: 2px solid #ffaadd;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0 28px;
+  z-index: 100;
+}
+.nav-btn {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  background: none; border: none;
+  cursor: pointer; padding: 4px 16px;
+  position: relative;
+}
+.nav-btn svg {
+  width: 26px; height: 26px;
+  stroke: #ff4db8; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.nav-label { font-size: 11px; color: #ff4db8; font-weight: 600; }
+.cart-badge {
+  position: absolute; top: -2px; right: 6px;
+  background: #e83d3d; color: #fff;
+  border-radius: 50%; width: 20px; height: 20px;
+  font-size: 11px; font-weight: 800;
+  display: none; align-items: center; justify-content: center;
+}
+@keyframes pop { from{transform:scale(0)} to{transform:scale(1)} }
+
+/* CART OVERLAY */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35); z-index: 200;
+  align-items: flex-end; justify-content: center;
+}
+.overlay.active { display: flex; }
+
+.cart-sheet {
+  width: 100%; max-width: 430px;
+  background: #fff; border-radius: 28px 28px 0 0;
+  padding: 24px 20px 50px;
+  animation: slideUp 0.28s ease;
+  max-height: 80vh;
+  display: flex; flex-direction: column;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+.cart-title { font-size: 20px; font-weight: 800; color: #ff4db8; text-align: center; margin-bottom: 18px; }
+.cart-items { flex: 1; overflow-y: auto; }
+.cart-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid #ffe0f0;
+}
+.cart-item:last-of-type { border-bottom: none; }
+.cart-item-img {
+  width: 60px; height: 60px;
+  border-radius: 12px; background: #fff0f8;
+  object-fit: contain; flex-shrink: 0; padding: 4px;
+}
+.cart-item-name { font-size: 15px; font-weight: 700; color: #cc0066; }
+
+.continue-btn {
+  margin-top: 18px; width: 100%;
+  background: #22c55e; color: #fff;
+  border: none; border-radius: 16px;
+  padding: 16px; font-size: 18px; font-weight: 900;
+  letter-spacing: 1px; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(34,197,94,0.4);
+}
+
+/* DELIVERY */
+.delivery-overlay {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  align-items: center; justify-content: center;
+}
+.delivery-overlay.active {
+  display: flex;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255,100,180,0.2);
+}
+.delivery-card {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
+  animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from{transform:scale(0.3);opacity:0} to{transform:scale(1);opacity:1} }
+.delivery-icon { font-size: 80px; }
+.delivery-text {
+  font-size: 34px; font-weight: 900; color: #fff; letter-spacing: 2px;
+  animation: glow 1s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 20px rgba(255,150,220,0.9); }
+  to   { text-shadow: 0 0 40px #fff, 0 0 80px rgba(255,100,200,1); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Consumer Insight</h1>
+</div>
+
+<!-- BRAND SCREEN -->
+<div class="screen active" id="brandScreen">
+  <div class="brand-list">
+    <div class="brand-card" onclick="alert('Fenty Beauty coming soon!')">
+      <div class="brand-name fenty">Fenty Beauty</div>
+    </div>
+    <div class="brand-card" onclick="alert('Chanel coming soon!')">
+      <div class="brand-name chanel">Chanel</div>
+    </div>
+    <div class="brand-card" onclick="showProducts()">
+      <div class="brand-name sol">Sol de Janeiro</div>
+    </div>
+    <div class="brand-card" onclick="alert('KIKO Milano coming soon!')">
+      <div class="brand-name kiko">KIKO Milano</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS SCREEN -->
+<div class="screen" id="productScreen">
+  <div class="products-header">
+    <button class="back-btn" onclick="showBrands()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </button>
+    <div class="selected-brand"><span>Sol de Janeiro</span></div>
+  </div>
+  <div class="product-grid">
+    <div class="product-card" id="p0" onclick="toggleProduct(0)">
+      <img src="sol1.png" alt="Product 1">
+      <div class="check-mark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+    <div class="product-card" id="p1" onclick="toggleProduct(1)">
+      <img src="sol2.png" alt="Product 2">
+      <div class="check-mark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+    <div class="product-card" id="p2" onclick="toggleProduct(2)">
+      <img src="sol3.png" alt="Product 3">
+      <div class="check-mark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+    <div class="product-card" id="p3" onclick="toggleProduct(3)">
+      <img src="sol4.png" alt="Product 4">
+      <div class="check-mark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+    <div class="product-card" id="p4" onclick="toggleProduct(4)">
+      <img src="sol5.png" alt="Product 5">
+      <div class="check-mark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+    <div class="product-card" id="p5" onclick="toggleProduct(5)">
+      <img src="sol6.png" alt="Product 6">
+      <div class="check-mark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-bar">
+  <button class="nav-btn" onclick="alert('Settings')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    <span class="nav-label">Settings</span>
+  </button>
+  <button class="nav-btn" onclick="alert('Search')">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span class="nav-label">Search</span>
+  </button>
+  <button class="nav-btn" onclick="openCart()">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <span class="cart-badge" id="cartBadge">0</span>
+    <span class="nav-label">Cart</span>
+  </button>
+</div>
+
+<!-- CART -->
+<div class="overlay" id="cartOverlay">
+  <div class="cart-sheet">
+    <div class="cart-title">🛒 Your Cart</div>
+    <div class="cart-items" id="cartItems"></div>
+    <button class="continue-btn" onclick="onContinue()">Continue</button>
+  </div>
+</div>
+
+<!-- DELIVERY -->
+<div class="delivery-overlay" id="deliveryOverlay">
+  <div class="delivery-card">
+    <div class="delivery-icon">🚗</div>
+    <div class="delivery-text">Delivering...</div>
+  </div>
+</div>
+
+<script>
+var products = [
+  { name: 'Brazilian Bum Bum Cream', src: 'sol1.png' },
+  { name: 'Beija Flor Body Lotion',  src: 'sol2.png' },
+  { name: 'Coco Cabana Body Cream',  src: 'sol3.png' },
+  { name: 'Cheirosa Body Mist',      src: 'sol4.png' },
+  { name: 'Brazilian Joia Shampoo',  src: 'sol5.png' },
+  { name: 'Bom Dia Bright Serum',    src: 'sol6.png' }
+];
+
+var selected = {};
+var badge = document.getElementById('cartBadge');
+
+function showProducts() {
+  document.getElementById('brandScreen').classList.remove('active');
+  document.getElementById('productScreen').classList.add('active');
+}
+
+function showBrands() {
+  document.getElementById('productScreen').classList.remove('active');
+  document.getElementById('brandScreen').classList.add('active');
+}
+
+function toggleProduct(i) {
+  var card = document.getElementById('p' + i);
+  if (selected[i]) {
+    delete selected[i];
+    card.classList.remove('selected');
+  } else {
+    selected[i] = true;
+    card.classList.add('selected');
+  }
+  updateBadge();
+}
+
+function updateBadge() {
+  var n = Object.keys(selected).length;
+  badge.style.display = n > 0 ? 'flex' : 'none';
+  badge.textContent = n;
+  badge.style.animation = 'none';
+  badge.offsetHeight;
+  badge.style.animation = 'pop 0.3s cubic-bezier(.34,1.56,.64,1)';
+}
+
+function openCart() {
+  var list = document.getElementById('cartItems');
+  list.innerHTML = '';
+  var keys = Object.keys(selected);
+  if (keys.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:#ffaadd;padding:20px 0">Cart is empty</p>';
+  } else {
+    keys.forEach(function(i) {
+      var p = products[i];
+      var row = document.createElement('div'); row.className = 'cart-item';
+      var img = document.createElement('img'); img.className = 'cart-item-img'; img.src = p.src; img.alt = p.name;
+      var nm  = document.createElement('span'); nm.className = 'cart-item-name'; nm.textContent = p.name;
+      row.appendChild(img); row.appendChild(nm);
+      list.appendChild(row);
+    });
+  }
+  document.getElementById('cartOverlay').classList.add('active');
+}
+
+function onContinue() {
+  document.getElementById('cartOverlay').classList.remove('active');
+  document.getElementById('deliveryOverlay').classList.add('active');
+  setTimeout(function() {
+    document.getElementById('deliveryOverlay').classList.remove('active');
+    selected = {};
+    updateBadge();
+    for (var i = 0; i < 6; i++) {
+      document.getElementById('p' + i).classList.remove('selected');
+    }
+  }, 4000);
+}
+
+document.getElementById('cartOverlay').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('active');
+});
+document.getElementById('deliveryOverlay').addEventListener('click', function() {
+  this.classList.remove('active');
+});
+</script>
+</body>
+</html>
